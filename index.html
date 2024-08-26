@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Máquinas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #a94442;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+        }
+
+        form div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #a94442;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background-color: #d9534f;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #c9302c;
+        }
+
+        #resumenReporte {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #resumenReporte h2 {
+            text-align: center;
+            color: #a94442;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        #resumenReporte .reporte-item {
+            background-color: #f9d6d5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e6a1a0;
+        }
+
+        #resumenReporte .reporte-item p {
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        #resumenReporte .reporte-item p:nth-child(even) {
+            background-color: #f2bdbb;
+            padding-left: 10px;
+        }
+
+        #resumenReporte .reporte-item p strong {
+            color: #a94442;
+        }
+
+        h2 {
+            text-align: center;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Máquinas</h1>
+    <form id="reporteForm">
+        <div>
+            <label for="maquina">Nombre de la Máquina:</label>
+            <input type="text" id="maquina" name="maquina">
+        </div>
+        <div>
+            <label for="bolsa">Nombre de la Bolsa:</label>
+            <input type="text" id="bolsa" name="bolsa">
+        </div>
+        <div>
+            <label for="clave">Clave:</label>
+            <input type="text" id="clave" name="clave">
+        </div>
+        <div>
+            <label for="fsc">¿La bolsa es FSC?:</label>
+            <select id="fsc" name="fsc">
+                <option value="no">No</option>
+                <option value="si">Sí</option>
+            </select>
+        </div>
+        <div>
+            <label for="ordenFabricacion">Orden de Fabricación:</label>
+            <input type="text" id="ordenFabricacion" name="ordenFabricacion">
+        </div>
+        <div>
+            <label for="numRollos">Número de Rollos:</label>
+            <input type="number" id="numRollos" name="numRollos">
+        </div>
+        <div>
+            <label for="observaciones">Observaciones:</label>
+            <textarea id="observaciones" name="observaciones"></textarea>
+        </div>
+        <button type="button" onclick="agregarReporte()">Agregar al Reporte</button>
+    </form>
+
+    <h2>Resumen del Reporte</h2>
+    <div id="resumenReporte"></div>
+
+    <button onclick="descargarExcel()">Descargar como Excel</button>
+    <button onclick="descargarImagen()">Descargar como Imagen</button>
+
+    <script>
+        const reportes = [];
+
+        function agregarReporte() {
+            const maquina = document.getElementById('maquina').value;
+            const bolsa = document.getElementById('bolsa').value;
+            const clave = document.getElementById('clave').value;
+            const fsc = document.getElementById('fsc').value;
+            const ordenFabricacion = document.getElementById('ordenFabricacion').value;
+            const numRollos = document.getElementById('numRollos').value;
+            const observaciones = document.getElementById('observaciones').value;
+
+            let fscText = fsc === "si" ? "Sí 🌳" : "No";
+            const reporte = { maquina, bolsa, clave, fsc: fscText, ordenFabricacion, numRollos, observaciones };
+            reportes.push(reporte);
+
+            document.getElementById('reporteForm').reset();
+            actualizarResumen();
+        }
+
+        function actualizarResumen() {
+            const resumenDiv = document.getElementById('resumenReporte');
+            resumenDiv.innerHTML = '';
+
+            reportes.forEach((reporte, index) => {
+                resumenDiv.innerHTML += `<div class="reporte-item">
+                    <p><strong>${index + 1}. Máquina:</strong> ${reporte.maquina}</p>
+                    <p><strong>Bolsa:</strong> ${reporte.bolsa}</p>
+                    <p><strong>Clave:</strong> ${reporte.clave}</p>
+                    <p><strong>FSC:</strong> ${reporte.fsc}</p>
+                    <p><strong>Orden de Fabricación:</strong> ${reporte.ordenFabricacion}</p>
+                    <p><strong>Número de Rollos:</strong> ${reporte.numRollos}</p>
+                    <p><strong>Observaciones:</strong> ${reporte.observaciones}</p>
+                </div>`;
+            });
+        }
+
+        function descargarExcel() {
+            const ws = XLSX.utils.json_to_sheet(reportes);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+            XLSX.writeFile(wb, "reporte_maquinas.xlsx");
+        }
+
+        function descargarImagen() {
+            html2canvas(document.getElementById('resumenReporte')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'reporte_maquinas.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</body>
+</html>
