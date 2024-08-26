@@ -40,7 +40,8 @@
         input[type="text"],
         input[type="number"],
         textarea,
-        select {
+        select,
+        input[type="file"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -106,6 +107,13 @@
             color: #a94442;
         }
 
+        #resumenReporte .reporte-item img {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 4px;
+            border: 1px solid #a94442;
+        }
+
         h2 {
             text-align: center;
             color: #a94442;
@@ -146,6 +154,10 @@
             <label for="observaciones">Observaciones:</label>
             <textarea id="observaciones" name="observaciones"></textarea>
         </div>
+        <div>
+            <label for="imagen">Agregar Imagen (opcional):</label>
+            <input type="file" id="imagen" name="imagen" accept="image/*">
+        </div>
         <button type="button" onclick="agregarReporte()">Agregar al Reporte</button>
     </form>
 
@@ -166,12 +178,27 @@
             const ordenFabricacion = document.getElementById('ordenFabricacion').value;
             const numRollos = document.getElementById('numRollos').value;
             const observaciones = document.getElementById('observaciones').value;
+            const imagenInput = document.getElementById('imagen');
 
             let fscText = fsc === "si" ? "Sí 🌳" : "No";
-            const reporte = { maquina, bolsa, clave, fsc: fscText, ordenFabricacion, numRollos, observaciones };
-            reportes.push(reporte);
+            let imagenURL = "";
+
+            if (imagenInput.files && imagenInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagenURL = e.target.result;
+                    agregarReporteItem({ maquina, bolsa, clave, fsc: fscText, ordenFabricacion, numRollos, observaciones, imagenURL });
+                };
+                reader.readAsDataURL(imagenInput.files[0]);
+            } else {
+                agregarReporteItem({ maquina, bolsa, clave, fsc: fscText, ordenFabricacion, numRollos, observaciones, imagenURL });
+            }
 
             document.getElementById('reporteForm').reset();
+        }
+
+        function agregarReporteItem(reporte) {
+            reportes.push(reporte);
             actualizarResumen();
         }
 
@@ -188,6 +215,7 @@
                     <p><strong>Orden de Fabricación:</strong> ${reporte.ordenFabricacion}</p>
                     <p><strong>Número de Rollos:</strong> ${reporte.numRollos}</p>
                     <p><strong>Observaciones:</strong> ${reporte.observaciones}</p>
+                    ${reporte.imagenURL ? `<img src="${reporte.imagenURL}" alt="Imagen de la Máquina">` : ''}
                 </div>`;
             });
         }
